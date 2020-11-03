@@ -7,25 +7,23 @@
 //
 
 import SwiftUI
+import Combine
 
 class EmojiArtDocument: ObservableObject {
     
     static let palette: String = "🐶🐱🐭🐰🐹🦊🐻🐽🍊"
     
-    // @Published // workaround for property observer problem with property wrappers
-    private var emojiArt: EmojiArt = EmojiArt() {
-        willSet {
-            objectWillChange.send()
-        }
-        didSet {
-            UserDefaults.standard.set(emojiArt.json, forKey: EmojiArtDocument.untitled)
-        }
-    } //no background, no emoji to start with
+    @Published private var emojiArt: EmojiArt
     
     private static let untitled = "EmojiArtDocument.Untitled"
     
+    private var autosaveCancellable: AnyCancellable?
+    
     init() {
         emojiArt = EmojiArt(json: UserDefaults.standard.data(forKey: EmojiArtDocument.untitled)) ?? EmojiArt()
+        autosaveCancellable = $emojiArt.sink { emojiArt in
+            UserDefaults.standard.set(emojiArt.json, forKey: EmojiArtDocument.untitled)
+        }
         fetchBackgroundImageData()
     }
     
@@ -54,23 +52,37 @@ class EmojiArtDocument: ObservableObject {
         }
     }
     
-    func setBackgroundURL(_ url: URL?) {
-        emojiArt.backgroundURL = url?.imageURL
-        fetchBackgroundImageData()
+    var backgroundURL: URL? {
+        get {
+            emojiArt.backgroundURL
+        }
+        set {
+            emojiArt.backgroundURL = newValue?.imageURL
+            fetchBackgroundImageData()
+        }
     }
+    
+    private var fetchImageCancellable: AnyCancellable?
     
     func fetchBackgroundImageData() {
         backgroundImage = nil
         if let url = self.emojiArt.backgroundURL {
-            DispatchQueue.global(qos: .userInitiated).async { //perform this function off of this background queue
-                if let imageData = try? Data(contentsOf: url) {
-                    DispatchQueue.main.async { //back on main queue because the view watches backgroundImage changes
-                        if url == self.emojiArt.backgroundURL { //to protect against user selecting image from slow server and changing another image, old image comes back up
-                            self.backgroundImage = UIImage(data: imageData)
-                        }
-                    }
-                }
-            }
+            fetchImageCancellable?.cancel() //in the case where it's fetching and the user tries to fetch something else, cancel the old one
+            let publisher = URLSession.shared.dataTaskPublisher(for: url) //returns a tuple, maps it so it returns a UIImage (maps publisher to a different publisher)
+                .map { data, urlResponse in UIImage(data: data) }
+                .receive(on: DispatchQueue.main) //publishes them on the main queue
+                .replaceError(with: nil) //change error type to never so you can do assign
+            fetchImageCancellable = publisher.assign(to: \.backgroundImage, on: self) //assign to our variable
+            //Alternative way
+//            DispatchQueue.global(qos: .userInitiated).async { //perform this function off of this background queue
+//                if let imageData = try? Data(contentsOf: url) {
+//                    DispatchQueue.main.async { //back on main queue because the view watches backgroundImage changes
+//                        if url == self.emojiArt.backgroundURL { //to protect against user selecting image from slow server and changing another image, old image comes back up
+//                            self.backgroundImage = UIImage(data: imageData)
+//                        }
+//                    }
+//                }
+//            }
         }
     }
 }
