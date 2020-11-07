@@ -12,6 +12,11 @@ struct EmojiArtDocumentView: View {
     @ObservedObject var document: EmojiArtDocument
     @State private var chosenPalette: String = ""
     
+    init(document: EmojiArtDocument) {
+        self.document = document
+        _chosenPalette = State(wrappedValue: self.document.defaultPalette) //initializing the state of chosenPalette by setting this struct directly
+    }
+    
     var body: some View {
         VStack {
             HStack {
@@ -60,6 +65,13 @@ struct EmojiArtDocumentView: View {
                     location = CGPoint(x: location.x / self.zoomScale, y: location.y / self.zoomScale)
                     return self.drop(providers: providers, at: location) //returns whether drop succeeds
                 }
+                .navigationBarItems(trailing: Button(action: {
+                    if let url = UIPasteboard.general.url {
+                        self.document.backgroundURL = url
+                    }
+                }, label: {
+                    Image(systemName: "doc.on.clipboard").imageScale(.large)
+                }))
             }
         }
     }
@@ -68,17 +80,15 @@ struct EmojiArtDocumentView: View {
         document.backgroundURL != nil && document.backgroundImage == nil
     }
     
-    @State private var steadyStateZoomScale: CGFloat = 1.0 //how much we're zoomed in/out in our documents
     @GestureState private var gestureZoomScale: CGFloat = 1.0
-    @State private var steadyStatePanOffset: CGSize = .zero
     @GestureState private var gesturePanOffset: CGSize = .zero
     
     private var zoomScale: CGFloat {
-        steadyStateZoomScale * gestureZoomScale
+        document.steadyStateZoomScale * gestureZoomScale
     }
     
     private var panOffset: CGSize {
-        (steadyStatePanOffset + gesturePanOffset) * zoomScale
+        (document.steadyStatePanOffset + gesturePanOffset) * zoomScale
     }
     
     private func panGesture() -> some Gesture {
@@ -87,7 +97,7 @@ struct EmojiArtDocumentView: View {
                 gesturePanOffset = latestDragGestureValue.translation / self.zoomScale
             }
             .onEnded { finalDragGestureValue in
-                self.steadyStatePanOffset = self.steadyStatePanOffset + (finalDragGestureValue.translation / self.zoomScale)
+                self.document.steadyStatePanOffset = self.document.steadyStatePanOffset + (finalDragGestureValue.translation / self.zoomScale)
             }
     }
     
@@ -98,7 +108,7 @@ struct EmojiArtDocumentView: View {
                 
             }
             .onEnded { finalGestureScale in
-                self.steadyStateZoomScale *= finalGestureScale
+                self.document.steadyStateZoomScale *= finalGestureScale
             }
     }
     
@@ -112,11 +122,11 @@ struct EmojiArtDocumentView: View {
     }
     
     private func zoomToFit(_ image: UIImage?, in size: CGSize) {
-        if let image = image, image.size.width > 0, image.size.height > 0 {
+        if let image = image, image.size.width > 0, image.size.height > 0, size.height > 0, size.width > 0 {
             let hZoom = size.width / image.size.width
             let vZoom = size.height / image.size.height
-            self.steadyStatePanOffset = .zero
-            self.steadyStateZoomScale = min(hZoom, vZoom)
+            self.document.steadyStatePanOffset = .zero
+            self.document.steadyStateZoomScale = min(hZoom, vZoom)
         }
     }
     
