@@ -25,6 +25,7 @@
 		F5423C50254DBCBC002AC915 /* EmojiArtExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5423C4F254DBCBC002AC915 /* EmojiArtExtensions.swift */; };
 		F5423C52254DE26F002AC915 /* OptionalImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5423C51254DE26F002AC915 /* OptionalImage.swift */; };
 		F5423C54254DE555002AC915 /* AnimatableSystemFontModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5423C53254DE555002AC915 /* AnimatableSystemFontModifier.swift */; };
+		F5B14E012569ACCF003EDAE4 /* EditableText.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5B14E002569ACCF003EDAE4 /* EditableText.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -48,6 +49,7 @@
 		F5423C4F254DBCBC002AC915 /* EmojiArtExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmojiArtExtensions.swift; sourceTree = "<group>"; };
 		F5423C51254DE26F002AC915 /* OptionalImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptionalImage.swift; sourceTree = "<group>"; };
 		F5423C53254DE555002AC915 /* AnimatableSystemFontModifier.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnimatableSystemFontModifier.swift; sourceTree = "<group>"; };
+		F5B14E002569ACCF003EDAE4 /* EditableText.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditableText.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -88,6 +90,7 @@
 				F52046302552090F0008C3F0 /* EmojiArtDocumentPalette.swift */,
 				F5204639255380D20008C3F0 /* EmojiArtDocumentStore.swift */,
 				F5423C3B254DAF4D002AC915 /* EmojiArtDocumentView.swift */,
+				F5B14E002569ACCF003EDAE4 /* EditableText.swift */,
 				F5423C4B254DAFA5002AC915 /* EmojiArtDocument.swift */,
 				F520462C2552064B0008C3F0 /* PaletteChooser.swift */,
 				F5423C53254DE555002AC915 /* AnimatableSystemFontModifier.swift */,
@@ -194,6 +197,7 @@
 				F520463A255380D20008C3F0 /* EmojiArtDocumentStore.swift in Sources */,
 				F5423C54254DE555002AC915 /* AnimatableSystemFontModifier.swift in Sources */,
 				F520463D2554B6530008C3F0 /* EmojiArtDocumentChooser.swift in Sources */,
+				F5B14E012569ACCF003EDAE4 /* EditableText.swift in Sources */,
 				F5423C4C254DAFA5002AC915 /* EmojiArtDocument.swift in Sources */,
 				F520462D2552064B0008C3F0 /* PaletteChooser.swift in Sources */,
 				F520463425535B140008C3F0 /* Grid.swift in Sources */,

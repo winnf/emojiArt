@@ -11,7 +11,9 @@ import SwiftUI
 struct EmojiArtDocumentView: View {
     @ObservedObject var document: EmojiArtDocument
     @State private var chosenPalette: String = ""
-    
+    @State private var explainBackgroundPaste = false
+    @State private var confirmBackgroundPaste = false
+
     init(document: EmojiArtDocument) {
         self.document = document
         _chosenPalette = State(wrappedValue: self.document.defaultPalette) //initializing the state of chosenPalette by setting this struct directly
@@ -66,13 +68,30 @@ struct EmojiArtDocumentView: View {
                     return self.drop(providers: providers, at: location) //returns whether drop succeeds
                 }
                 .navigationBarItems(trailing: Button(action: {
-                    if let url = UIPasteboard.general.url {
-                        self.document.backgroundURL = url
+                    if let url = UIPasteboard.general.url, url != self.document.backgroundURL {
+                        self.confirmBackgroundPaste = true
+                    } else {
+                        self.explainBackgroundPaste = true
                     }
                 }, label: {
                     Image(systemName: "doc.on.clipboard").imageScale(.large)
+                        .alert(isPresented: self.$explainBackgroundPaste) {
+                            return Alert(title: Text("Paste Background"),
+                                         message: Text("Copy the URL of an image to the clipboard and touch this button to make it the background of your document."),
+                                         dismissButton: .default(Text("OK"))) //default button sets it back to false
+                        }
                 }))
             }
+            .zIndex(-1) //closer to the back (reordering of views)
+        }
+        .alert(isPresented: self.$confirmBackgroundPaste) {
+            return Alert(title: Text("Paste Background"),
+                         message: Text("Replace your background with \(UIPasteboard.general.url?.absoluteString ?? "nothing")?."),
+                         primaryButton: .default(Text("OK")) {
+                            self.document.backgroundURL = UIPasteboard.general.url
+                         },
+                         secondaryButton: .cancel()
+            )
         }
     }
     

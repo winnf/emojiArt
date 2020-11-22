@@ -24,7 +24,7 @@ struct PaletteChooser: View {
             Text(self.document.paletteNames[self.chosenPalette] ?? "")
             Image(systemName: "keyboard").imageScale(.large)
                 .onTapGesture { self.showPaletteEditor = true }
-                .sheet(isPresented: $showPaletteEditor) {
+                .popover(isPresented: $showPaletteEditor) {
                     PaletteEditor(chosenPalette: self.$chosenPalette, isShowing: self.$showPaletteEditor)
                         .environmentObject(self.document) //pass document to environment object
                         .frame(minWidth: 300, minHeight: 500)

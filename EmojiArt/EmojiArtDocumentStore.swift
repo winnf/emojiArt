@@ -50,7 +50,7 @@ class EmojiArtDocumentStore: ObservableObject
     }
 }
 
-extension Dictionary where Key == EmojiArtDocument, Value == String {
+extension Dictionary where Key == EmojiArtDocument, Value == String { //needed in order to use userDefaults from line 46 because EmojiArtDocument is not a standard type 
     var asPropertyList: [String:String] {
         var uuidToName = [String:String]()
         for (key, value) in self {
